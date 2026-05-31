@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Roleta do Saber | Matérias & Aulas | Design Elegante</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 30%, #1a3f2a, #082012);
+            margin: 0;
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border-radius: 48px;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .main-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .left-area {
+            flex: 1;
+            min-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .roleta-card {
+            background: linear-gradient(145deg, #fff5e6, #ffe6c7);
+            border-radius: 48px;
+            padding: 18px 12px;
+            box-shadow: 0 12px 0 #b87c2e;
+            text-align: center;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 5px auto;
+        }
+
+        canvas {
+            background: #fff8ed;
+            border-radius: 50%;
+            box-shadow: 0 0 0 6px #f3cd81, 0 12px 25px rgba(0,0,0,0.3);
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        canvas:hover {
+            transform: scale(1.01);
+        }
+
+        .controles-roleta {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 18px 0 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-girar, .btn-parar, .btn-cancelar {
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            background: #f0e2d0;
+            color: #4a2e1a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(2px);
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .btn-girar {
+            background: #f3b33d;
+            color: #2c1a0a;
+            font-weight: 600;
+        }
+        .btn-parar {
+            background: #d9534f;
+            color: white;
+        }
+        .btn-cancelar {
+            background: #b0a088;
+            color: white;
+        }
+        .btn-girar:hover, .btn-parar:hover, .btn-cancelar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+        }
+        .btn-girar:active, .btn-parar:active, .btn-cancelar:active {
+            transform: translateY(1px);
+        }
+
+        .resultado-giro {
+            background: #2e241b;
+            padding: 12px;
+            border-radius: 60px;
+            color: #ffeaaf;
+            font-weight: 500;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .painels-area {
+            background: #ecd9b4;
+            border-radius: 42px;
+            padding: 16px;
+            box-shadow: inset 0 1px 3px rgba(255,250,210,0.8), 0 8px 14px rgba(0,0,0,0.15);
+        }
+        .painels-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .painel {
+            flex: 0 1 calc(33.33% - 10px);
+            min-width: 105px;
+            background: #fffaf2;
+            border-radius: 32px;
+            padding: 8px 4px;
+            text-align: center;
+            box-shadow: 0 5px 0 #aa7e54;
+            transition: 0.1s;
+            border: 1px solid #ffe0aa;
+        }
+        .painel.ativo {
+            background: linear-gradient(145deg, #ffecb3, #ffdf9c);
+            box-shadow: 0 0 0 2px gold, 0 5px 0 #b87c2e;
+            transform: scale(1.02);
+        }
+        .painel-nome input {
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+            background: #fff8f0;
+            border: 1px solid #dcb475;
+            border-radius: 40px;
+            padding: 5px 8px;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+        .painel-pontos {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: #2b1f14;
+            color: #ffe0a3;
+            border-radius: 40px;
+            margin: 6px 0;
+            padding: 2px;
+        }
+        .btn-selecionar {
+            background: #7b5a3c;
+            border: none;
+            color: white;
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.1s;
+        }
+        .btn-selecionar:hover {
+            background: #9b704a;
+            transform: scale(0.98);
+        }
+        .btn-zerar-pontos {
+            background: #aa7e54;
+            border: none;
+            color: #fff0dd;
+            border-radius: 30px;
+            padding: 3px 10px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.1s;
+            margin-left: 6px;
+        }
+        .btn-zerar-pontos:hover {
+            background: #8b5e3c;
+            transform: scale(0.96);
+        }
+
+        .right-area {
+            flex: 1.2;
+            min-width: 420px;
+            background: #fffbf0;
+            border-radius: 48px;
+            padding: 22px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+            border: 1px solid #ffedcc;
+        }
+
+        .org-header {
+            background: #f3e7cf;
+            border-radius: 44px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+        }
+        .org-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .org-row label {
+            font-weight: 600;
+            min-width: 60px;
+            font-size: 0.85rem;
+            color: #4a3620;
+        }
+        .org-row select {
+            flex: 2;
+            padding: 6px 12px;
+            border-radius: 32px;
+            border: 1px solid #caa167;
+            background: white;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .org-row button {
+            background: #e3d0b0;
+            border: none;
+            color: #4a2e1a;
+            font-weight: 500;
+            font-size: 0.75rem;
+            border-radius: 32px;
+            padding: 5px 12px;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .org-row button:hover {
+            background: #d4bd92;
+            transform: translateY(-1px);
+        }
+        .org-row button.danger {
+            background: #c98a6c;
+            color: white;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin: 10px 0 12px;
+        }
+        .titulo-zoom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .zoom-buttons {
+            display: flex;
+            gap: 6px;
+            background: #e7d5b7;
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+        .btn-zoom {
+            background: #c7af83;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            padding: 4px 12px;
+            cursor: pointer;
+            transition: 0.1s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-zoom:hover {
+            background: #b39264;
+            transform: scale(0.96);
+        }
+        .quest-navegacao {
+            display: flex;
+            gap: 8px;
+            background: #f0e3cf;
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+        .btn-nav {
+            background: #c7af83;
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 30px;
+            padding: 4px 14px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .btn-nav:hover {
+            background: #b39264;
+        }
+
+        .pergunta-area textarea {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px 14px;
+            border-radius: 28px;
+            border: 1.5px solid #e2c289;
+            background: white;
+            font-size: 1rem;
+            font-weight: 500;
+            resize: vertical;
+            font-family: inherit;
+            transition: font-size 0.1s ease;
+        }
+
+        .alternativas {
+            display: grid;
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .alt-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #fcf5e8;
+            border-radius: 48px;
+            padding: 6px 14px;
+        }
+        .alt-letra {
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: #d6b16e;
+            color: white;
+            min-width: 44px;
+            text-align: center;
+            border-radius: 40px;
+            padding: 4px 0;
+            flex-shrink: 0;
+            transition: font-size 0.1s ease;
+        }
+        .alt-item textarea {
+            flex: 1;
+            border-radius: 40px;
+            border: 1px solid #dbbc87;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            resize: vertical;
+            background: white;
+            font-family: inherit;
+            transition: font-size 0.1s ease;
+        }
+
+        .botoes-quest {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 12px 0;
+        }
+        .botoes-quest button {
+            background: #e0cbab;
+            border: none;
+            font-size: 0.8rem;
+            padding: 7px 16px;
+            border-radius: 32px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.1s;
+            color: #2d2418;
+        }
+        .botoes-quest button:hover {
+            background: #cdb48b;
+            transform: translateY(-1px);
+        }
+
+        .professor-panel {
+            background: #efE3ca;
+            border-radius: 44px;
+            padding: 12px;
+            margin: 12px 0;
+            text-align: center;
+        }
+        .btn-toggle-prof {
+            background: #8b6944;
+            color: #ffefcf;
+            border: none;
+            border-radius: 36px;
+            padding: 6px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        .prof-options {
+            margin-top: 12px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .prof-options button {
+            background: #4d3a26;
+            color: #ffda99;
+            font-weight: bold;
+            font-size: 1.4rem;
+            width: 52px;
+            border: none;
+            border-radius: 40px;
+            padding: 6px 0;
+            cursor: pointer;
+            transition: 0.05s;
+        }
+        .prof-options button.correta-marcada {
+            background: #b91c1c;
+            color: white;
+            box-shadow: 0 0 0 2px #ffcc44;
+        }
+        .gabarito-oculto {
+            display: none;
+        }
+
+        .resposta-painel {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin: 20px 0 16px;
+        }
+        .btn-resposta {
+            background: #f5e5cf;
+            border: none;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 50px;
+            padding: 8px 22px;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: #4a2b10;
+        }
+        .btn-resposta.selecionado {
+            background: #f3b33d;
+            color: #2c1a0a;
+            box-shadow: inset 0 0 0 2px white, 0 2px 6px black;
+            transform: scale(0.98);
+        }
+
+        .btn-validar {
+            background: #2e7d32;
+            width: 100%;
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px;
+            border-radius: 60px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .btn-validar:hover {
+            background: #1f5a22;
+            transform: scale(0.99);
+        }
+
+        .msg-feedback {
+            background: #efe0c9;
+            border-radius: 44px;
+            padding: 12px;
+            margin-top: 16px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #3a2a1a;
+        }
+        footer {
+            text-align: center;
+            color: #fff0c8;
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+        button, select, input, textarea {
+            transition: all 0.15s ease;
+        }
+
+        .senha-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .senha-modal {
+            background: #fffaf0;
+            border-radius: 48px;
+            padding: 28px 24px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+            border: 1px solid #ffdaaa;
+        }
+        .senha-modal h3 {
+            margin: 0 0 12px;
+            color: #5a3e24;
+            font-weight: 600;
+        }
+        .senha-input-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        .senha-input-container input {
+            width: 100%;
+            padding: 12px 45px 12px 18px;
+            font-size: 1rem;
+            border-radius: 60px;
+            border: 1.5px solid #dcb475;
+            background: white;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            user-select: none;
+            color: #8b6a44;
+        }
+        .senha-modal button {
+            background: #8b6944;
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            transition: 0.1s;
+        }
+        .senha-modal button:hover {
+            background: #6b4e2e;
+            transform: scale(0.98);
+        }
+        .senha-erro {
+            color: #b52b1a;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="main-layout">
+        <div class="left-area">
+            <div class="roleta-card">
+                <div class="canvas-container">
+                    <canvas id="roletaCanvas" width="380" height="380"></canvas>
+                </div>
+                <div class="controles-roleta">
+                    <button class="btn-girar" id="btnGirar">🎡 GIRAR</button>
+                    <button class="btn-parar" id="btnParar">🛑 PARAR</button>
+                    <button class="btn-cancelar" id="btnCancelarGiro">✖ CANCELAR</button>
+                </div>
+                <div class="resultado-giro" id="resultadoGiro">✨ Gire a roleta! ✨</div>
+            </div>
+            <div class="painels-area">
+                <h3 style="margin:0 0 6px; text-align:center; font-size:1.1rem;">👥 PARTICIPANTES</h3>
+                <div class="painels-grid" id="painelsGrid"></div>
+                <div style="font-size:0.7rem; margin-top:8px;">🔘 Selecione quem joga | 🔄 Zerar pontos</div>
+            </div>
+        </div>
+
+        <div class="right-area">
+            <div class="org-header">
+                <div class="org-row">
+                    <label>📘 Matéria:</label>
+                    <select id="materiaSelect"></select>
+                    <button id="btnAddMateria">+ Mat</button>
+                    <button id="btnEditMateria">✏️</button>
+                    <button id="btnDelMateria" class="danger">🗑️</button>
+                </div>
+                <div class="org-row">
+                    <label>📖 Aula:</label>
+                    <select id="aulaSelect"></select>
+                    <button id="btnAddAula">+ Aula</button>
+                    <button id="btnEditAula">✏️</button>
+                    <button id="btnDelAula" class="danger">🗑️</button>
+                </div>
+            </div>
+
+            <div class="quest-header">
+                <div class="titulo-zoom">
+                    <span style="font-weight:600; background:#e7d5b7; padding:5px 18px; border-radius:40px; font-size:0.9rem;">📚 PERGUNTAS</span>
+                    <div class="zoom-buttons">
+                        <button id="btnZoomMais" class="btn-zoom" title="Aumentar texto">🔍+</button>
+                        <button id="btnZoomMenos" class="btn-zoom" title="Diminuir texto">🔍-</button>
+                    </div>
+                </div>
+                <div class="quest-navegacao">
+                    <button id="btnPrevQuest" class="btn-nav">◀</button>
+                    <span id="questIndexDisplay" style="font-weight:bold; font-size:1rem;">1 / 1</span>
+                    <button id="btnNextQuest" class="btn-nav">▶</button>
+                </div>
+            </div>
+            <div class="pergunta-area">
+                <textarea id="perguntaTexto" rows="2" placeholder="Digite a pergunta..."></textarea>
+                <div class="alternativas">
+                    <div class="alt-item"><span class="alt-letra">A)</span><textarea id="altA" rows="1" placeholder="Alternativa A"></textarea></div>
+                    <div class="alt-item"><span class="alt-letra">B)</span><textarea id="altB" rows="1" placeholder="Alternativa B"></textarea></div>
+                    <div class="alt-item"><span class="alt-letra">C)</span><textarea id="altC" rows="1" placeholder="Alternativa C"></textarea></div>
+                    <div class="alt-item"><span class="alt-letra">D)</span><textarea id="altD" rows="1" placeholder="Alternativa D"></textarea></div>
+                </div>
+                <div class="botoes-quest">
+                    <button id="btnSalvarQuest">💾 SALVAR</button>
+                    <button id="btnNovaQuest">➕ NOVA</button>
+                    <button id="btnExcluirQuest">🗑️ EXCLUIR</button>
+                </div>
+                <div class="professor-panel">
+                    <button id="btnToggleProf" class="btn-toggle-prof">🔒 PROFESSOR (definir correta)</button>
+                    <div id="profOptions" style="display: none;" class="prof-options">
+                        <button data-correct="A" id="profBtnA">A</button>
+                        <button data-correct="B" id="profBtnB">B</button>
+                        <button data-correct="C" id="profBtnC">C</button>
+                        <button data-correct="D" id="profBtnD">D</button>
+                    </div>
+                    <div id="gabaritoHidden" class="gabarito-oculto"></div>
+                </div>
+            </div>
+            <div class="resposta-painel">
+                <button class="btn-resposta" data-resp="A">✅ A</button>
+                <button class="btn-resposta" data-resp="B">✅ B</button>
+                <button class="btn-resposta" data-resp="C">✅ C</button>
+                <button class="btn-resposta" data-resp="D">✅ D</button>
+            </div>
+            <button id="btnValidarPontuar" class="btn-validar">🏆 VALIDAR & PONTUAR</button>
+            <div id="feedbackMsg" class="msg-feedback">✨ Organize por Matérias e Aulas. Tudo salvo auto.</div>
+        </div>
+    </div>
+    <footer>🎓 JOGO CRIADO POR PROF. RENATO OLIVEIRA &copy; DIREITOS RESERVADOS</footer>
+</div>
+
+<script>
+    // ========== PERSISTÊNCIA ==========
+    const STORAGE_KEY = "Roleta_MateriasAulasV2";
+    let materias = [];
+    let materiaAtualIndex = 0, aulaAtualIndex = 0, questaoAtualIndex = 0;
+    let jogadores = [];
+    let jogadorAtivo = 0;
+    let spinning = false, animId = null, velocidadeAtual = 0, lastTimestamp = 0, anguloAtual = 0;
+    let giroPendente = null, pontosRodada = null, tipoRodada = null;
+    let respostaSelecionadaLetra = null;
+    let respostaCorretaGlobal = "A";
+
+    // Zoom control
+    let zoomLevel = 1;
+    const zoomStep = 0.1;
+    const minZoom = 0.6;
+    const maxZoom = 2.0;
+
+    const canvas = document.getElementById('roletaCanvas');
+    const ctx = canvas.getContext('2d');
+    const resultadoDiv = document.getElementById('resultadoGiro');
+    const feedbackDiv = document.getElementById('feedbackMsg');
+    const painelsGrid = document.getElementById('painelsGrid');
+    const profOptionsDiv = document.getElementById('profOptions');
+    const btnToggleProf = document.getElementById('btnToggleProf');
+    const gabaritoSpan = document.getElementById('gabaritoHidden');
+
+    function salvarTudo() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ materias, jogadores, jogadorAtivo }));
+    }
+
+    function carregarDados() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            materias = parsed.materias;
+            jogadores = parsed.jogadores || [];
+            jogadorAtivo = parsed.jogadorAtivo || 0;
+        }
+        if (!materias || materias.length === 0) {
+            materias = [
+                { nome: "Matemática", aulas: [{ nome: "Álgebra", questoes: [
+                    { pergunta: "Quanto é 2 + 2?", altA: "3", altB: "4", altC: "5", altD: "6", correta: "B" },
+                    { pergunta: "Raiz quadrada de 16?", altA: "2", altB: "6", altC: "8", altD: "4", correta: "D" }
+                ] }, { nome: "Geometria", questoes: [{ pergunta: "Quantos lados tem um triângulo?", altA: "3", altB: "4", altC: "5", altD: "6", correta: "A" }] } ] },
+                { nome: "História", aulas: [{ nome: "Brasil Colonial", questoes: [{ pergunta: "Descobrimento do Brasil?", altA: "1500", altB: "1492", altC: "1600", altD: "1822", correta: "A" }] } ] }
+            ];
+            salvarTudo();
+        }
+        if (!jogadores.length) {
+            for (let i = 0; i < 6; i++) jogadores.push({ id: i, nome: `Jogador ${i+1}`, pontos: 0 });
+            salvarTudo();
+        } else if (jogadores.length < 6) {
+            let currentLen = jogadores.length;
+            for (let i = currentLen; i < 6; i++) jogadores.push({ id: i, nome: `Jogador ${i+1}`, pontos: 0 });
+            salvarTudo();
+        } else if (jogadores.length > 6) {
+            jogadores = jogadores.slice(0, 6);
+            salvarTudo();
+        }
+        if (jogadorAtivo >= jogadores.length) jogadorAtivo = 0;
+    }
+
+    // Zoom functions
+    function aplicarZoom() {
+        const perguntaTextarea = document.getElementById('perguntaTexto');
+        const altATextarea = document.getElementById('altA');
+        const altBTextarea = document.getElementById('altB');
+        const altCTextarea = document.getElementById('altC');
+        const altDTextarea = document.getElementById('altD');
+        const letras = document.querySelectorAll('.alt-letra');
+        
+        // Tamanhos base: pergunta 1rem, alternativas 0.95rem, letras 1.4rem
+        perguntaTextarea.style.fontSize = `${1.0 * zoomLevel}rem`;
+        altATextarea.style.fontSize = `${0.95 * zoomLevel}rem`;
+        altBTextarea.style.fontSize = `${0.95 * zoomLevel}rem`;
+        altCTextarea.style.fontSize = `${0.95 * zoomLevel}rem`;
+        altDTextarea.style.fontSize = `${0.95 * zoomLevel}rem`;
+        letras.forEach(el => el.style.fontSize = `${1.4 * zoomLevel}rem`);
+        
+        // Reajustar altura dos textareas (auto-resize)
+        autoResizeAll();
+    }
+    
+    function zoomMais() {
+        if (zoomLevel + zoomStep <= maxZoom) {
+            zoomLevel += zoomStep;
+            aplicarZoom();
+            feedbackDiv.innerHTML = `🔍 Texto ampliado para ${Math.round(zoomLevel*100)}%`;
+        } else {
+            feedbackDiv.innerHTML = `🔍 Tamanho máximo atingido.`;
+        }
+    }
+    
+    function zoomMenos() {
+        if (zoomLevel - zoomStep >= minZoom) {
+            zoomLevel -= zoomStep;
+            aplicarZoom();
+            feedbackDiv.innerHTML = `🔍 Texto reduzido para ${Math.round(zoomLevel*100)}%`;
+        } else {
+            feedbackDiv.innerHTML = `🔍 Tamanho mínimo atingido.`;
+        }
+    }
+
+    function atualizarSeletores() {
+        const materiaSelect = document.getElementById('materiaSelect');
+        const aulaSelect = document.getElementById('aulaSelect');
+        materiaSelect.innerHTML = '';
+        materias.forEach((m, idx) => {
+            let opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = m.nome;
+            if (idx === materiaAtualIndex) opt.selected = true;
+            materiaSelect.appendChild(opt);
+        });
+        if (materias.length === 0) return;
+        const aulas = materias[materiaAtualIndex]?.aulas || [];
+        aulaSelect.innerHTML = '';
+        aulas.forEach((a, idx) => {
+            let opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = a.nome;
+            if (idx === aulaAtualIndex) opt.selected = true;
+            aulaSelect.appendChild(opt);
+        });
+    }
+
+    function carregarQuestaoAtual() {
+        const materia = materias[materiaAtualIndex];
+        if (!materia || !materia.aulas.length) { limparForm(); return; }
+        const aula = materia.aulas[aulaAtualIndex];
+        if (!aula.questoes.length) { limparForm(); document.getElementById('questIndexDisplay').innerText = `0 / 0`; return; }
+        if (questaoAtualIndex >= aula.questoes.length) questaoAtualIndex = aula.questoes.length - 1;
+        const q = aula.questoes[questaoAtualIndex];
+        document.getElementById('perguntaTexto').value = q.pergunta;
+        document.getElementById('altA').value = q.altA;
+        document.getElementById('altB').value = q.altB;
+        document.getElementById('altC').value = q.altC;
+        document.getElementById('altD').value = q.altD;
+        respostaCorretaGlobal = q.correta;
+        atualizarMarcacaoCorreta(q.correta);
+        document.getElementById('questIndexDisplay').innerText = `${questaoAtualIndex+1} / ${aula.questoes.length}`;
+        autoResizeAll();
+        aplicarZoom(); // reaplica zoom após carregar questão
+    }
+    function limparForm() {
+        document.getElementById('perguntaTexto').value = '';
+        ['altA','altB','altC','altD'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('questIndexDisplay').innerText = `0 / 0`;
+    }
+    function autoResizeAll() {
+        const textareas = [document.getElementById('altA'), document.getElementById('altB'), document.getElementById('altC'), document.getElementById('altD'), document.getElementById('perguntaTexto')];
+        textareas.forEach(ta => { if(ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; } });
+    }
+    function atualizarMarcacaoCorreta(letra) {
+        const botoes = { A: document.getElementById('profBtnA'), B: document.getElementById('profBtnB'), C: document.getElementById('profBtnC'), D: document.getElementById('profBtnD') };
+        Object.keys(botoes).forEach(l => { if(botoes[l]) { if(l===letra) botoes[l].classList.add('correta-marcada'); else botoes[l].classList.remove('correta-marcada'); } });
+        if (gabaritoSpan) gabaritoSpan.innerHTML = '';
+    }
+    function salvarQuestao() {
+        const materia = materias[materiaAtualIndex];
+        if (!materia || !materia.aulas.length) { feedbackDiv.innerHTML = "Crie uma aula primeiro!"; return; }
+        const aula = materia.aulas[aulaAtualIndex];
+        const novaQuest = {
+            pergunta: document.getElementById('perguntaTexto').value,
+            altA: document.getElementById('altA').value,
+            altB: document.getElementById('altB').value,
+            altC: document.getElementById('altC').value,
+            altD: document.getElementById('altD').value,
+            correta: respostaCorretaGlobal
+        };
+        if (aula.questoes.length === 0) aula.questoes.push(novaQuest);
+        else aula.questoes[questaoAtualIndex] = novaQuest;
+        salvarTudo();
+        carregarQuestaoAtual();
+        feedbackDiv.innerHTML = "✅ Pergunta salva!";
+    }
+    function novaQuestao() {
+        const materia = materias[materiaAtualIndex];
+        if (!materia || !materia.aulas.length) { feedbackDiv.innerHTML = "Adicione uma aula primeiro."; return; }
+        const aula = materia.aulas[aulaAtualIndex];
+        aula.questoes.push({ pergunta: "", altA: "", altB: "", altC: "", altD: "", correta: "A" });
+        questaoAtualIndex = aula.questoes.length - 1;
+        salvarTudo();
+        carregarQuestaoAtual();
+        feedbackDiv.innerHTML = "📘 Nova pergunta criada.";
+    }
+    function excluirQuestao() {
+        const materia = materias[materiaAtualIndex];
+        if (!materia || !materia.aulas.length) return;
+        const aula = materia.aulas[aulaAtualIndex];
+        if (aula.questoes.length <= 1) { feedbackDiv.innerHTML = "Pelo menos uma pergunta por aula."; return; }
+        aula.questoes.splice(questaoAtualIndex, 1);
+        if (questaoAtualIndex >= aula.questoes.length) questaoAtualIndex = aula.questoes.length - 1;
+        salvarTudo();
+        carregarQuestaoAtual();
+        feedbackDiv.innerHTML = "🗑️ Excluída.";
+    }
+    function mudarQuestao(delta) {
+        const aula = materias[materiaAtualIndex]?.aulas[aulaAtualIndex];
+        if (!aula || !aula.questoes.length) return;
+        let novo = questaoAtualIndex + delta;
+        if (novo < 0) novo = 0;
+        if (novo >= aula.questoes.length) novo = aula.questoes.length - 1;
+        questaoAtualIndex = novo;
+        carregarQuestaoAtual();
+    }
+
+    function addMateria() { let n=prompt("Nome da matéria"); if(n){ materias.push({ nome:n, aulas:[] }); materiaAtualIndex=materias.length-1; aulaAtualIndex=0; salvarTudo(); atualizarSeletores(); carregarQuestaoAtual(); } }
+    function editMateria() { if(materias.length){ let novo=prompt("Novo nome", materias[materiaAtualIndex].nome); if(novo){ materias[materiaAtualIndex].nome=novo; salvarTudo(); atualizarSeletores(); } } }
+    function delMateria() { if(materias.length<=1){ feedbackDiv.innerHTML="Mantenha uma matéria"; return; } if(confirm(`Excluir ${materias[materiaAtualIndex].nome}?`)){ materias.splice(materiaAtualIndex,1); if(materiaAtualIndex>=materias.length) materiaAtualIndex=materias.length-1; aulaAtualIndex=0; salvarTudo(); atualizarSeletores(); carregarQuestaoAtual(); } }
+    function addAula() { if(!materias.length){ feedbackDiv.innerHTML="Crie matéria primeiro"; return; } let n=prompt("Nome da aula"); if(n){ materias[materiaAtualIndex].aulas.push({ nome:n, questoes:[] }); aulaAtualIndex=materias[materiaAtualIndex].aulas.length-1; salvarTudo(); atualizarSeletores(); carregarQuestaoAtual(); } }
+    function editAula() { let aula=materias[materiaAtualIndex]?.aulas[aulaAtualIndex]; if(aula){ let novo=prompt("Novo nome aula",aula.nome); if(novo){ aula.nome=novo; salvarTudo(); atualizarSeletores(); } } }
+    function delAula() { let mat=materias[materiaAtualIndex]; if(mat?.aulas.length<=1){ feedbackDiv.innerHTML="Deve haver pelo menos uma aula"; return; } if(confirm(`Excluir aula "${mat.aulas[aulaAtualIndex].nome}"?`)){ mat.aulas.splice(aulaAtualIndex,1); if(aulaAtualIndex>=mat.aulas.length) aulaAtualIndex=mat.aulas.length-1; salvarTudo(); atualizarSeletores(); carregarQuestaoAtual(); } }
+
+    // ========== ROLETA (código original intacto) ==========
+    const CORES = ["#FF4D4D","#FF9F4A","#FFE15C","#8CCB8E","#50B85A","#3A8FBF","#9B59B6","#FF77B5","#FF9F6E","#66F0A3","#34D8E8","#F368E0","#F9D56E"];
+    const SETORES = [
+        { nome:"100", valor:100, tipo:"numero", exibir:"100", cor:0 }, { nome:"200", valor:200, tipo:"numero", exibir:"200", cor:1 },
+        { nome:"300", valor:300, tipo:"numero", exibir:"300", cor:2 }, { nome:"400", valor:400, tipo:"numero", exibir:"400", cor:3 },
+        { nome:"500", valor:500, tipo:"numero", exibir:"500", cor:4 }, { nome:"600", valor:600, tipo:"numero", exibir:"600", cor:5 },
+        { nome:"700", valor:700, tipo:"numero", exibir:"700", cor:6 }, { nome:"800", valor:800, tipo:"numero", exibir:"800", cor:7 },
+        { nome:"900", valor:900, tipo:"numero", exibir:"900", cor:8 }, { nome:"1000",valor:1000,tipo:"numero",exibir:"1000",cor:9},
+        { nome:"💀", valor:0, tipo:"perde", exibir:"💀", cor:10 }, { nome:"🔄", valor:0, tipo:"passa", exibir:"🔄", cor:11 },
+        { nome:"⭐1500", valor:1500, tipo:"jogue_novamente", exibir:"⭐1500", cor:12 }
+    ];
+    const QTD = SETORES.length, ANG = (Math.PI*2)/QTD;
+    function desenharRoleta() {
+        const w=canvas.width, h=canvas.height, cx=w/2, cy=h/2, raio=w/2 - 16;
+        ctx.clearRect(0,0,w,h);
+        for(let i=0;i<QTD;i++){
+            let inicio = i*ANG + anguloAtual, fim = inicio+ANG;
+            ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,raio,inicio,fim);
+            ctx.fillStyle = CORES[SETORES[i].cor % CORES.length];
+            ctx.fill(); ctx.strokeStyle="#FFF"; ctx.lineWidth=2; ctx.stroke();
+            let meio = inicio+ANG/2, tx=cx+Math.cos(meio)*raio*0.7, ty=cy+Math.sin(meio)*raio*0.7;
+            ctx.save(); ctx.translate(tx,ty); ctx.rotate(meio); ctx.fillStyle="#FFFFFF"; ctx.shadowBlur=3; ctx.shadowColor="black";
+            let texto = SETORES[i].exibir;
+            ctx.font = `bold ${texto.length>3 ? 26 : 34}px "Segoe UI", "Poppins"`;
+            ctx.textAlign="center"; ctx.textBaseline="middle";
+            ctx.fillText(texto,0,0);
+            ctx.restore();
+        }
+        ctx.beginPath(); ctx.moveTo(cx-20,cy-raio-2); ctx.lineTo(cx,cy-raio+28); ctx.lineTo(cx+20,cy-raio-2); ctx.fillStyle="#C11F2B"; ctx.fill();
+    }
+    function animateSpin(t){ if(!spinning) return; if(!lastTimestamp) lastTimestamp=t; let d=Math.min(50,t-lastTimestamp); if(d>0){ velocidadeAtual=Math.max(velocidadeAtual*0.987,0.5); anguloAtual=(anguloAtual+velocidadeAtual*d*0.007)%(Math.PI*2); desenharRoleta(); } lastTimestamp=t; if(spinning && velocidadeAtual>0.5) animId=requestAnimationFrame(animateSpin); else if(spinning) finalizarParada(); }
+    function iniciarGiro(){ if(spinning) return; if(giroPendente) cancelarGiro(); spinning=true; velocidadeAtual=18+Math.random()*14; lastTimestamp=0; resultadoDiv.innerHTML="🌀 Girando..."; if(animId) cancelAnimationFrame(animId); animId=requestAnimationFrame(animateSpin); }
+    function pararGiro(){ if(!spinning) return; spinning=false; if(animId) cancelAnimationFrame(animId); finalizarParada(); }
+    function finalizarParada(){ let angPonteiro=-Math.PI/2, rel=(angPonteiro-anguloAtual+2*Math.PI)%(2*Math.PI), idx=Math.floor(rel/ANG)%QTD; giroPendente=SETORES[idx]; let s=giroPendente; if(s.tipo==="numero"){ pontosRodada=s.valor; tipoRodada="numero"; resultadoDiv.innerHTML=`🎲 ${s.valor} pontos!`; } else if(s.tipo==="perde"){ tipoRodada="perde"; resultadoDiv.innerHTML="💀 PERDE TUDO!"; } else if(s.tipo==="passa"){ tipoRodada="passa"; resultadoDiv.innerHTML="🔄 PASSA A VEZ!"; } else { pontosRodada=1500; tipoRodada="jogue_novamente"; resultadoDiv.innerHTML="⭐ 1500 + JOGADA EXTRA!"; } desenharRoleta(); }
+    function cancelarGiro(){ giroPendente=null; pontosRodada=null; tipoRodada=null; resultadoDiv.innerHTML="✨ Giro cancelado!"; }
+
+    function zerarPontosJogador(idx) {
+        if (jogadores[idx]) {
+            jogadores[idx].pontos = 0;
+            salvarTudo();
+            renderPainels();
+            feedbackDiv.innerHTML = `🧹 Pontos de ${jogadores[idx].nome} zerados!`;
+        }
+    }
+
+    function renderPainels() {
+        painelsGrid.innerHTML = '';
+        jogadores.forEach((j, idx) => {
+            const div = document.createElement('div');
+            div.className = `painel ${jogadorAtivo === idx ? 'ativo' : ''}`;
+            div.innerHTML = `
+                <div class="painel-nome"><input type="text" value="${j.nome.replace(/"/g, '&quot;')}" data-idx="${idx}" class="nome-input"></div>
+                <div class="painel-pontos">${j.pontos}</div>
+                <div style="display: flex; justify-content: center; gap: 6px;">
+                    <button class="btn-selecionar" data-idx="${idx}">🎯 Ativar</button>
+                    <button class="btn-zerar-pontos" data-idx-zero="${idx}">🔄 Zerar</button>
+                </div>
+            `;
+            painelsGrid.appendChild(div);
+        });
+        document.querySelectorAll('.nome-input').forEach(inp => {
+            inp.addEventListener('change', (e) => {
+                let idx = parseInt(inp.dataset.idx);
+                if (!isNaN(idx)) {
+                    jogadores[idx].nome = inp.value;
+                    salvarTudo();
+                    renderPainels();
+                }
+            });
+        });
+        document.querySelectorAll('.btn-selecionar').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = parseInt(btn.dataset.idx);
+                if (!isNaN(idx)) {
+                    jogadorAtivo = idx;
+                    salvarTudo();
+                    renderPainels();
+                    feedbackDiv.innerHTML = `🎤 ${jogadores[idx].nome} na vez!`;
+                }
+            });
+        });
+        document.querySelectorAll('.btn-zerar-pontos').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = parseInt(btn.dataset.idxZero);
+                if (!isNaN(idx)) zerarPontosJogador(idx);
+            });
+        });
+    }
+
+    function validarResposta() {
+        if(!giroPendente){ feedbackDiv.innerHTML="Gire a roleta primeiro!"; return; }
+        if(!respostaSelecionadaLetra){ feedbackDiv.innerHTML="Selecione a alternativa do aluno."; return; }
+        const aula = materias[materiaAtualIndex]?.aulas[aulaAtualIndex];
+        if(!aula || !aula.questoes.length) return;
+        const correta = aula.questoes[questaoAtualIndex].correta;
+        let acertou = (respostaSelecionadaLetra === correta);
+        let jog = jogadores[jogadorAtivo];
+        if(tipoRodada==="numero"){ if(acertou) jog.pontos+=pontosRodada; feedbackDiv.innerHTML=acertou?`✔️ +${pontosRodada} pts`:"❌ Errou!"; }
+        else if(tipoRodada==="perde"){ let perd=jog.pontos; jog.pontos=0; feedbackDiv.innerHTML=`💀 Perdeu ${perd} pts!`; }
+        else if(tipoRodada==="passa"){ jogadorAtivo=(jogadorAtivo+1)%jogadores.length; feedbackDiv.innerHTML=`🔄 Vez: ${jogadores[jogadorAtivo].nome}`; renderPainels(); }
+        else if(tipoRodada==="jogue_novamente"){ if(acertou) jog.pontos+=pontosRodada; feedbackDiv.innerHTML=acertou?`⭐ +${pontosRodada} + JOGADA EXTRA`:"⭐ Erro, mas gira novamente!"; }
+        renderPainels(); salvarTudo();
+        giroPendente=null; pontosRodada=null; tipoRodada=null;
+        respostaSelecionadaLetra=null; document.querySelectorAll('.btn-resposta').forEach(b=>b.classList.remove('selecionado'));
+    }
+
+    // Modal senha (inalterado)
+    function mostrarModalSenha(callbackSucesso) {
+        const existing = document.querySelector('.senha-modal-overlay');
+        if (existing) existing.remove();
+        const overlay = document.createElement('div');
+        overlay.className = 'senha-modal-overlay';
+        overlay.innerHTML = `
+            <div class="senha-modal">
+                <h3>🔐 Acesso do Professor</h3>
+                <div class="senha-input-container">
+                    <input type="password" id="senhaInput" placeholder="Digite a senha" autocomplete="off">
+                    <span class="toggle-password" id="toggleSenhaEye">👁️</span>
+                </div>
+                <button id="btnConfirmarSenha">Confirmar</button>
+                <div id="senhaErroMsg" class="senha-erro"></div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        const input = overlay.querySelector('#senhaInput');
+        const eye = overlay.querySelector('#toggleSenhaEye');
+        const confirmBtn = overlay.querySelector('#btnConfirmarSenha');
+        const erroDiv = overlay.querySelector('#senhaErroMsg');
+        const verificar = () => {
+            if (input.value === "157157") {
+                overlay.remove();
+                callbackSucesso(true);
+            } else {
+                erroDiv.textContent = "❌ Senha incorreta! Tente novamente.";
+                input.value = "";
+                input.focus();
+                callbackSucesso(false);
+            }
+        };
+        eye.addEventListener('click', () => {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            eye.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+        confirmBtn.addEventListener('click', verificar);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); verificar(); } });
+        input.focus();
+    }
+
+    btnToggleProf.onclick = () => {
+        if (profOptionsDiv.style.display === 'none' || profOptionsDiv.style.display === '') {
+            mostrarModalSenha((sucesso) => {
+                if (sucesso) {
+                    profOptionsDiv.style.display = 'flex';
+                    feedbackDiv.innerHTML = "✅ Painel do professor aberto. Selecione a alternativa correta (marcará em vermelho).";
+                } else {
+                    feedbackDiv.innerHTML = "❌ Senha incorreta! Acesso negado.";
+                }
+            });
+        } else {
+            profOptionsDiv.style.display = 'none';
+            feedbackDiv.innerHTML = "Painel do professor fechado.";
+        }
+    };
+
+    function eventos(){
+        document.getElementById('btnGirar').onclick=iniciarGiro;
+        document.getElementById('btnParar').onclick=pararGiro;
+        document.getElementById('btnCancelarGiro').onclick=cancelarGiro;
+        document.getElementById('btnValidarPontuar').onclick=validarResposta;
+        document.querySelectorAll('.btn-resposta').forEach(btn=>btn.onclick=()=>{ let l=btn.getAttribute('data-resp'); respostaSelecionadaLetra=l; document.querySelectorAll('.btn-resposta').forEach(b=>b.classList.remove('selecionado')); btn.classList.add('selecionado'); feedbackDiv.innerHTML=`Aluno respondeu ${l}`; });
+        document.getElementById('btnSalvarQuest').onclick=salvarQuestao;
+        document.getElementById('btnNovaQuest').onclick=novaQuestao;
+        document.getElementById('btnExcluirQuest').onclick=excluirQuestao;
+        document.getElementById('btnPrevQuest').onclick=()=>mudarQuestao(-1);
+        document.getElementById('btnNextQuest').onclick=()=>mudarQuestao(1);
+        document.getElementById('btnAddMateria').onclick=addMateria;
+        document.getElementById('btnEditMateria').onclick=editMateria;
+        document.getElementById('btnDelMateria').onclick=delMateria;
+        document.getElementById('btnAddAula').onclick=addAula;
+        document.getElementById('btnEditAula').onclick=editAula;
+        document.getElementById('btnDelAula').onclick=delAula;
+        document.getElementById('materiaSelect').onchange=()=>{ materiaAtualIndex=parseInt(document.getElementById('materiaSelect').value); aulaAtualIndex=0; questaoAtualIndex=0; atualizarSeletores(); carregarQuestaoAtual(); };
+        document.getElementById('aulaSelect').onchange=()=>{ aulaAtualIndex=parseInt(document.getElementById('aulaSelect').value); questaoAtualIndex=0; carregarQuestaoAtual(); };
+        document.querySelectorAll('[data-correct]').forEach(btn=>{ btn.onclick=()=>{ let letra=btn.getAttribute('data-correct'); respostaCorretaGlobal=letra; const aula=materias[materiaAtualIndex]?.aulas[aulaAtualIndex]; if(aula && aula.questoes[questaoAtualIndex]) aula.questoes[questaoAtualIndex].correta=letra; salvarTudo(); atualizarMarcacaoCorreta(letra); feedbackDiv.innerHTML=`Correta definida: ${letra}`; profOptionsDiv.style.display='none'; }; });
+        document.getElementById('btnZoomMais').onclick = zoomMais;
+        document.getElementById('btnZoomMenos').onclick = zoomMenos;
+    }
+
+    function init(){
+        carregarDados();
+        materiaAtualIndex=0; aulaAtualIndex=0; questaoAtualIndex=0;
+        atualizarSeletores();
+        carregarQuestaoAtual();
+        renderPainels();
+        eventos();
+        desenharRoleta();
+        aplicarZoom(); // inicializa zoom padrão
+    }
+    init();
+</script>
+</body>
+</html>
